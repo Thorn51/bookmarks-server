@@ -46,4 +46,35 @@ bookmarksRouter
     res.status(201).send(`Bookmark ${id} posted`);
   });
 
+bookmarksRouter
+  .route("/bookmarks/:id")
+  .get((req, res) => {
+    const { id } = req.params;
+    const bookmark = bookmarks.find(bookmark => bookmark.id == id);
+
+    if (!bookmark) {
+      logger.error(`Bookmark id-${id} not found`);
+      return res.status(404).send("Invalid request");
+    }
+
+    res.json(bookmark);
+  })
+  .delete((req, res) => {
+    const { id } = req.params;
+    const bookmarkIndex = bookmarks.findIndex(bookmark => bookmark.id == id);
+
+    if (bookmarkIndex === -1) {
+      logger.error(`Bookmark with id-${id} was not found`);
+      return res.status(404).send("Nope, not found");
+    }
+
+    bookmarks.splice(bookmarkIndex, 1);
+
+    const dateStamp = Date();
+
+    logger.info(`Bookmark id-${id} removed on ${dateStamp}`);
+
+    res.status(204).send();
+  });
+
 module.exports = bookmarksRouter;
