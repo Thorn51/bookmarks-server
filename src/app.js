@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 const { NODE_ENV } = require("./config");
+const bookmarksRouter = require("./bookmarks/bookmarks-router");
 
 const app = express();
 
@@ -20,11 +21,15 @@ app.use(function validateBearerToken(req, res, next) {
   if (!bearerToken || apiToken !== bearerToken.split(" ")[1]) {
     return res.status(401).json({ error: "Unauthorized request" });
   }
+
+  next();
 });
 
 app.get("/", (req, res) => {
   res.send("Hello, world!");
 });
+
+app.use(bookmarksRouter);
 
 app.use(function errorHandler(error, req, res, next) {
   let response;
